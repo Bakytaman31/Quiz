@@ -2,8 +2,10 @@ import React from 'react';
 import { Box, Button, Container, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { NavLink } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 export const NotFoundPage = () => {
+  const {t, i18n} = useTranslation();
   return (
     <Box
       sx={{
@@ -20,10 +22,10 @@ export const NotFoundPage = () => {
               404
             </Typography>
             <Typography variant="h6">
-              Страница не найдена
+              {t("pageNotFound")}
             </Typography>
             <NavLink to='/'>
-            <Button variant="contained">Вернуться</Button>
+            <Button variant="contained">{t("goBack")}</Button>
             </NavLink>
           </Grid>
           <Grid xs={6}>

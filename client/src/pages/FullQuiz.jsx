@@ -8,13 +8,21 @@ import Typography from '@mui/material/Typography';
 import { Button, CardActions, CircularProgress } from '@mui/material';
 import { toast } from 'react-toastify';
 import 'easymde/dist/easymde.min.css';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
+import { useTranslation } from 'react-i18next';
 
 export const FullQuiz = () => {
   const [quizPassed, setQuizPassed] = React.useState();
   const [data, setData] = React.useState({});
+  const [status, setStatus] = React.useState(true);
   const [isLoading, setLoading] = React.useState(true);
   const [quizAnswers, setQuizAnswers] = React.useState([]);
   const { id } = useParams();
+  const {t, i18n} = useTranslation();
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -25,7 +33,7 @@ export const FullQuiz = () => {
       })
       .catch((err) => {
         console.log(err);
-        toast.error('Ошибка при получении результатов', {
+        toast.error(t("gettingResultsError"), {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -37,11 +45,17 @@ export const FullQuiz = () => {
       await axios.get(`/quizes/${id}`)
       .then((res) => {
         setData(res.data);
+        setStatus(res.data.open);
+        let answers = [];
+        for (let i=0; i< res.data.questions.length;i++) {
+          answers.push("");
+        }
+        setQuizAnswers(answers);
         setLoading(false);
       })
       .catch((err) => {
           console.log(err);
-          toast.error('Ошибка при получении квиза', {
+          toast.error(t("gettingQuizError"), {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -69,6 +83,7 @@ export const FullQuiz = () => {
   
   const onSubmit = async () => {
     if (data.questions.length === quizAnswers.length) {
+      
         let scores = 0;
         quizAnswers.map((quizAnswer) => {
           data.questions.map((correctAnswer) => {
@@ -82,7 +97,7 @@ export const FullQuiz = () => {
             result: scores
           };
           await axios.post(`/results/${id}`, fields)
-          toast.success('Ваш результат: ' + scores, {
+          toast.success(t("yourResult") + ": " + ((scores/data.questions.length)*100) + '%', {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -91,7 +106,7 @@ export const FullQuiz = () => {
             });
         } catch(err){
           console.log(err);
-          toast.error('Ошибка при сдаче квиза', {
+          toast.error(t("completeQuizError"), {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -105,7 +120,7 @@ export const FullQuiz = () => {
         })
         .catch((err) => {
           console.log(err);
-          toast.error('Ошибка при получении результатов', {
+          toast.error(t("gettingResultsError"), {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -114,7 +129,7 @@ export const FullQuiz = () => {
             });
       })
     } else {
-      toast.error('Вы не ответили на все вопросы', {
+      toast.error(t("didNotAnswerQuestions"), {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -138,18 +153,72 @@ export const FullQuiz = () => {
       isFullPost>
         {data.questions.map((question, i) => {
           let counter = i + 1;
-          return(
-          <div key={i} style={{marginTop: "20px"}}>
-            <h2>{counter + ") " +question.questionText}</h2>
-            {question.answers.map((answer, j) => (
-              <div key={j}>
-                <input type="radio" value={answer} checked={answer === quizAnswers[i]} onChange={(e) => onChangeHandler(e, i)}/>{answer}
-              </div>
-            ))}
-          </div>
-          )
+          switch(question.type) {
+            case "standart":
+              return(
+                <div key={i} style={{marginTop: "20px"}}>
+                  <h2>{counter + ") " +question.questionText}</h2>
+                  {question.answers.map((answer, j) => (
+                    <div key={j}>
+                      <input type="radio" value={answer} checked={answer === quizAnswers[i]} onChange={(e) => onChangeHandler(e, i)}/>{answer}
+                    </div>
+                  ))}
+                </div>
+                )
+            case "missedWord":
+              return(
+                <div key={i} style={{marginTop: "20px"}}>
+                  <h2>{counter + ") " + question.questionText[0] + " "} 
+                  <FormControl sx={{width: 200}}>
+                    <InputLabel id="demo-simple-select-label">{t("answer")}</InputLabel>
+                    <Select
+                      value={quizAnswers[i]}
+                      onChange={e => onChangeHandler(e, i)}
+                    >
+                      {question.answers.map((answer, j) => (
+                        <MenuItem key={j} value={answer}>{answer}</MenuItem>
+                      
+                  ))}
+                    </Select>
+                  </FormControl>
+                  {" " + question.questionText[1]}</h2>
+                  
+                  
+                </div>
+                )
+                case "esse":
+                  return(
+                    <div key={i} style={{marginTop: "20px"}}>
+                  <h2>{counter + ") " + question.questionText}</h2> 
+                  <FormControl fullWidth sx={{m: 1}}>
+                  <TextField
+                    id="outlined-multiline-static"
+                    
+                    multiline
+                    rows={15}
+                    value={quizAnswers[i]}
+                    onChange={e => onChangeHandler(e, i)}
+                  />
+                  </FormControl>
+                
+                  
+                  
+                </div>
+                  )
+            default:
+              return(
+                <div key={i} style={{marginTop: "20px"}}>
+                  <h2>{counter + ") " +question.questionText}</h2>
+                  {question.answers.map((answer, j) => (
+                    <div key={j}>
+                      <input type="radio" value={answer} checked={answer === quizAnswers[i]} onChange={(e) => onChangeHandler(e, i)}/>{answer}
+                    </div>
+                  ))}
+                </div>
+                )
+          }
         })}
-        <Button variant="contained" onClick={onSubmit} style={{marginTop: "20px"}}>Завершить</Button>
+        <Button variant="contained" onClick={onSubmit} style={{marginTop: "20px"}}>{t("complete")}</Button>
     </Quiz>
   </>;
 
@@ -161,15 +230,36 @@ export const FullQuiz = () => {
             {data.name}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Ваш результат: {quizPassed.result}
+            {t("yourResult")}: {(quizPassed.result/data.questions.length)*100}%
           </Typography>
         </CardContent>
       <CardActions>
       </CardActions>
     </Card>
   </>;
+
+const lockedQuiz = 
+<>
+  <Card sx={{ maxWidth: "xl" }}>
+      <CardContent>
+        <Typography gutterBottom variant="h5" component="div">
+          {t("quizUnavalable")}
+        </Typography>
+      </CardContent>
+    <CardActions>
+    </CardActions>
+  </Card>
+</>;
    
-   const page = quizPassed ? resultPage : quiz;
+   let page;
+
+   if (quizPassed) {
+    page = resultPage;
+   } else if(!quizPassed && !status) {
+    page = lockedQuiz;
+   } else {
+    page = quiz;
+   }
    
 
    return page

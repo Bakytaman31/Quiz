@@ -78,7 +78,7 @@ export const Results = () => {
                   {obj.user.fullName}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Результат: {obj.result}
+                  Результат: {obj.result}%
                 </Typography>
               </CardContent>
               <CardActions>

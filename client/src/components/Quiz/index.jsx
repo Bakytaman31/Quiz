@@ -1,19 +1,18 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Clear';
 import EditIcon from '@mui/icons-material/Edit';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
+import LockIcon from '@mui/icons-material/Lock';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import ReactPlayer from 'react-player'
 import { Worker } from '@react-pdf-viewer/core';
 import { Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import styles from './Post.module.scss';
-import { UserInfo } from '../UserInfo';
 import { PostSkeleton } from './Skeleton';
-import { fetchQuizes, fetchRemoveQuiz } from '../../redux/slices/quizes';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import ReactAudioPlayer from 'react-audio-player';
@@ -21,12 +20,12 @@ import ReactAudioPlayer from 'react-audio-player';
 export const Quiz = ({
   id,
   title,
-  createdAt,
-  user,
   video,
   audio,
   file,
-  date,
+  status,
+  lock,
+  unlock,
   deleteHandler,
   children,
   isFullPost,
@@ -53,18 +52,26 @@ export const Quiz = ({
               <EditIcon />
             </IconButton>
           </Link>
+          {status ? 
+            <IconButton color="secondary" onClick={() => lock(id)}>
+              <LockIcon />
+            </IconButton>
+            
+           : 
+            <IconButton color="primary" onClick={() => unlock(id)}>
+              <LockOpenIcon />
+            </IconButton>
+           }
           <IconButton onClick={() => deleteHandler(id)} color="secondary">
             <DeleteIcon />
           </IconButton>
         </div>
       )}
       <div className={styles.wrapper}>
-        <UserInfo {...user} additionalText={createdAt.substring(0, 10)} />
         <div className={styles.indention}>
           <h2 className={clsx(styles.title, { [styles.titleFull]: isFullPost })}>
             {isFullPost ? title : <Link to={`/quizes/${id}`}>{title}</Link>}
           </h2>
-          {date ? `Сдать до ${date.format("DD/MM/YYYY")}` : ''}
           {video ? 
             <div style={{margin: "20px auto", height: "500px"}}>
               <h2>Видео</h2>

@@ -1,7 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
 import axios from '../axios.js';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -11,13 +10,15 @@ import { Quiz } from '../components/Quiz';
 import CircularProgress from '@mui/material/CircularProgress'
 import { toast } from 'react-toastify';
 import 'easymde/dist/easymde.min.css';
+import { useTranslation } from 'react-i18next';
 
 export const Home = () => {
   const userData = useSelector((state) => state.auth.data);
   const [actualQuizes, setActualQuizes] = React.useState([]);
-  const [teachers, setTeachers] = React.useState([]);
-  const [teacher, setTeacher] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+  const [langType, setLangType] = React.useState('');
+  const [langLevel, setLangLevel] = React.useState('');
+  const {t, i18n} = useTranslation();
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -28,21 +29,7 @@ export const Home = () => {
       })
       .catch((err) => {
         console.log(err);
-        toast.error('Ошибка при получении квизов', {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          pauseOnHover: true,
-          theme: "colored",
-          });
-      })
-      await axios.get('/getTeachers')
-      .then((res) => {
-        setTeachers(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error('Ошибка при получении преподавателей', {
+        toast.error(t("gettingQuizError"), {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -55,39 +42,16 @@ export const Home = () => {
     fetchData();
   }, []);
 
-  const teacherHandler = async (e) => {
-    let oldQuizes;
-    let newQuizes = [];
-    setTeacher(e.target.value)
-    setLoading(true);
-    await axios.get('/quizes')
-      .then((res) => {
-        oldQuizes = (res.data).reverse();
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error('Ошибка при получении квизов', {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          pauseOnHover: true,
-          theme: "colored",
-          });
-      })
-    
-    oldQuizes.map((obj) => {
-      if (obj.author.fullName === e.target.value) {
-        newQuizes.push(obj);
-      } else if (e.target.value === '') {
-        newQuizes = oldQuizes;
-      }
-    })
-    setActualQuizes(newQuizes);
-    setLoading(false);
+  const langTypeHandler = e => {
+    setLangType(e.target.value);
+  }
+
+  const langLevelHandler = e => {
+    setLangLevel(e.target.value);
   }
 
   const deleteQuiz = async id => {
-    if (window.confirm('Вы действительно хотите удалить квиз?')) {
+    if (window.confirm(t("deleteQuizConfirmation"))) {
       try {
         setLoading(true);
         await axios.delete(`/quizes/${id}`);
@@ -95,7 +59,7 @@ export const Home = () => {
         .then((res) => {
           setActualQuizes((res.data).reverse());
         })
-        toast.success('Квиз удален', {
+        toast.success(t("quizDeleted"), {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -106,7 +70,7 @@ export const Home = () => {
       } catch (err) {
         console.log(err);
         setLoading(false);
-        toast.error('Ошибка при удалении квиза', {
+        toast.error(t("quizDeleteError"), {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -117,6 +81,94 @@ export const Home = () => {
     }
   }
 
+  const lockQuiz = async id => {
+    try {
+      setLoading(true);
+      await axios.post(`/quizes/lock/${id}`);
+      await axios.get('/quizes')
+      .then((res) => {
+        setActualQuizes((res.data).reverse());
+      })
+      toast.success(t("quizClosed"), {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        pauseOnHover: true,
+        theme: "colored",
+        });
+      setLoading(false);
+    } catch (err) {
+      console.log(err);
+      setLoading(false);
+      toast.error(t("quizCloseError"), {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        pauseOnHover: true,
+        theme: "colored",
+        });
+    }
+  }; 
+
+  const unlockQuiz = async id => {
+    try {
+      setLoading(true);
+      await axios.post(`/quizes/unlock/${id}`);
+      await axios.get('/quizes')
+      .then((res) => {
+        setActualQuizes((res.data).reverse());
+      })
+      toast.success(t("quizOpen"), {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        pauseOnHover: true,
+        theme: "colored",
+        });
+      setLoading(false);
+    } catch (err) {
+      console.log(err);
+      setLoading(false);
+      toast.error(t("quizOpenError"), {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        pauseOnHover: true,
+        theme: "colored",
+        });
+    }
+  }; 
+
+  const typeAndLevelHandler = async e => {
+    setLoading(true);
+    let type;
+    let level;
+    let oldQuizes;
+    let newQuizes = [];
+    console.log(e.target.name)
+    if (e.target.name === "type") {
+      type = e.target.value;
+      setLangType(type);
+      level = langLevel;
+    } else {
+      level = e.target.value;
+      setLangLevel(level);
+      type = langType;
+    }
+    console.log(type, level)
+    try {
+      await axios.get(`/quizes/typeAndLevel?langType=${type}&langLevel=${level}`)
+      .then((res) => {
+        setActualQuizes(res.data)
+      });
+      
+    } catch(e) {
+      console.log(e);
+    }
+    setLoading(false);
+  }
+
+
   if (loading) {
     return (  <div style={{display: 'flex', justifyContent: 'center', marginTop: '100px'}}>
                 <CircularProgress size={200} />
@@ -126,25 +178,43 @@ export const Home = () => {
 
   return (
     <>
-      <Grid container spacing={4}>
+      <Grid container spacing={2}>
         <Grid xs={12} item>
-          <Box sx={{ minWidth: 'xl' }} style={{marginBottom: '20px'}}>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <p></p>
             <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">Преподаватель</InputLabel>
+              <InputLabel id="demo-simple-select-label">{t("langType")}</InputLabel>
               <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={teacher}
-                label="Преподаватель"
-                onChange={teacherHandler}
+                name="type"
+                value={langType}
+                onChange={typeAndLevelHandler}
               >
-                <MenuItem value=""><p></p></MenuItem>
-                {teachers.map((teacher) => (
-                  <MenuItem key={teacher._id} value={teacher.fullName}>{teacher.fullName}</MenuItem>
-                ))}
+                <MenuItem value="literaryGerman">{t('literaryGerman')}</MenuItem>
+                <MenuItem value="technicalGerman">{t('technicalGerman')}</MenuItem>
               </Select>
             </FormControl>
-          </Box>
+            </Grid>
+            <Grid item xs={6}>
+              <p></p>
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">{t("langLevel")}</InputLabel>
+              <Select
+                name="level"
+                value={langLevel}
+                onChange={typeAndLevelHandler}
+              >
+                <MenuItem value="A1">A1</MenuItem>
+                <MenuItem value="A2">A2</MenuItem>
+                <MenuItem value="B1">B1</MenuItem>
+                <MenuItem value="B2">B2</MenuItem>
+                <MenuItem value="C1">C1</MenuItem>
+                <MenuItem value="C2">C2</MenuItem>
+              </Select>
+            </FormControl>
+            </Grid>
+        </Grid>
+        <p></p>
             {actualQuizes.map((obj) => (
                  <Quiz
                     key={obj._id}
@@ -154,7 +224,10 @@ export const Home = () => {
                     createdAt={obj.createdAt}
                     deleteHandler={deleteQuiz}
                     date={obj.expDate}
+                    status={obj.open}
                     isEditable={userData?._id === obj.author._id}
+                    lock={lockQuiz}
+                    unlock={unlockQuiz}
                   /> 
               )
           )} 

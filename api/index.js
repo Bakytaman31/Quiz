@@ -51,7 +51,9 @@ app.get('/getTeachers', UserController.getTeachers);
 
 app.get('/quizes', QuizControler.getAll);
 app.get('/quizes/myquizes', checkAuth, QuizControler.getQuizesById);
+app.get('/quizes/typeAndLevel', QuizControler.getQuizesByTypeAndLevel);
 app.get('/quizes/:id', checkAuth, QuizControler.getOne);
+
 app.post('/quizes', checkAuth, handleValidationErrors, QuizControler.create);
 app.delete('/quizes/:id', checkAuth, QuizControler.remove);
 app.patch(
@@ -60,6 +62,8 @@ app.patch(
   handleValidationErrors,
   QuizControler.update
   );
+app.post('/quizes/lock/:id', checkAuth, QuizControler.lockQuiz);
+app.post('/quizes/unlock/:id', checkAuth, QuizControler.unlockQuiz);
 
 app.get('/results/:id', checkAuth, ResultsController.getResultsByQuizId);
 app.post('/results/:id', checkAuth, ResultsController.create);

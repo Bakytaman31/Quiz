@@ -10,10 +10,12 @@ import { toast } from 'react-toastify';
 import 'easymde/dist/easymde.min.css';
 import styles from './Login.module.scss';
 import { fetchAuth, selectIsAuth } from '../../redux/slices/auth';
+import { useTranslation } from 'react-i18next';
 
 export const Login = () => {
   const isAuth = useSelector(selectIsAuth);
   const dispatch = useDispatch();
+  const {t, i18n} = useTranslation();
   const {
     register,
     handleSubmit,
@@ -50,7 +52,7 @@ export const Login = () => {
   return (
     <Paper classes={{ root: styles.root }}>
       <Typography classes={{ root: styles.title }} variant="h5">
-        Вход в аккаунт
+        {t("signIn")}
       </Typography>
       <form onSubmit={handleSubmit(onSubmit)}>
         <TextField
@@ -64,7 +66,7 @@ export const Login = () => {
         />
         <TextField
           className={styles.field}
-          label="Пароль"
+          label={t("password")}
           type="password"
           error={Boolean(errors.password?.message)}
           helperText={errors.password?.message}
@@ -72,7 +74,7 @@ export const Login = () => {
           fullWidth
         />
         <Button disabled={!isValid} type="submit" size="large" variant="contained" fullWidth>
-          Войти
+          {t("signInButton")}
         </Button>
       </form>
     </Paper>

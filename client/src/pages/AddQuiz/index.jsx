@@ -16,12 +16,13 @@ import '@react-pdf-viewer/core/lib/styles/index.css';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import ReactAudioPlayer from 'react-audio-player';
-import Stack from '@mui/material/Stack';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
-import moment from "moment";
-import dayjs from 'dayjs';
+import Grid from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import { useTranslation } from 'react-i18next';
+import { Questions } from '../../components';
 
 export const AddQuiz = () => {
   const { id } = useParams();
@@ -31,6 +32,7 @@ export const AddQuiz = () => {
   const [questions, setQuestions] = React.useState([{
     questionText: "",
     answers: ["", "", ""],
+    type: "",
     correctAnswer: ""
   }]);
   const [video, setVideo] = React.useState('');
@@ -39,7 +41,9 @@ export const AddQuiz = () => {
   const inputFileRef = React.useRef(null);
   const audioFileRef = React.useRef(null);
   const [audio, setAudio] = React.useState('');
-  const [date, setDate] = React.useState(dayjs("24-12-2022"));
+  const [langType, setLangType] = React.useState('');
+  const [langLevel, setLangLevel] = React.useState('');
+  const {t} = useTranslation();
 
   const isEditing = Boolean(id);
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
@@ -53,7 +57,8 @@ export const AddQuiz = () => {
         video,
         file,
         audio,
-        // date
+        langType,
+        langLevel
       };
 
       const { data } = isEditing
@@ -135,7 +140,7 @@ export const AddQuiz = () => {
   };
 
   const onClickRemoveAudio = () => {
-    audio = '';
+    setAudio('');
   };
   
 
@@ -143,16 +148,35 @@ export const AddQuiz = () => {
     setFile('');
   };
 
+  const langTypeHandler = e => {
+    setLangType(e.target.value);
+  }
 
-  const DateHandleChange = (inputDate) => {
-    console.log(moment(inputDate).format("DD/MM/YYYY"))
-    setDate(moment(inputDate).format("DD/MM/YYYY"));
-  };
+  const langLevelHandler = e => {
+    setLangLevel(e.target.value);
+  }
+
+  const questionTypeChange = (i, value) => {
+    let newQuestions = [...questions];
+    let item = {...newQuestions[i]};
+    item.type = value;
+    item.questionText = ["", ""]
+    newQuestions[i] = item;
+    setQuestions(newQuestions);
+  }
 
   const questionTextChange = (i, value) => {
     let newQuestions = [...questions];
     let item = {...newQuestions[i]};
     item.questionText = value;
+    newQuestions[i] = item;
+    setQuestions(newQuestions);
+  }
+
+  const missedWordQuestionTextChange = (i, j, value) => {
+    let newQuestions = [...questions];
+    let item = {...newQuestions[i]};
+    item.questionText[j] = value;
     newQuestions[i] = item;
     setQuestions(newQuestions);
   }
@@ -177,10 +201,26 @@ export const AddQuiz = () => {
     const newQuestion = {
       questionText: "",
       answers: ["", "", ""],
+      type: "",
       correctAnswer: ""
     };
     setQuestions([...questions, newQuestion]);
-    console.log(questions);
+  }
+
+  const addAnswer = i => {
+    let newQuestions = [...questions];
+    let item = {...newQuestions[i]};
+    item.answers.push("");
+    newQuestions[i] = item;
+    setQuestions(newQuestions);
+  }
+
+  const deleteAnswer = i => {
+    let newQuestions = [...questions];
+    let item = {...newQuestions[i]};
+    item.answers.splice(-1);
+    newQuestions[i] = item;
+    setQuestions(newQuestions);
   }
 
   React.useEffect(() => {
@@ -210,7 +250,7 @@ export const AddQuiz = () => {
         });
     }
     setLoading(false);
-  }, []);
+  }, [id]);
 
   if (!window.localStorage.getItem('token') && !isAuth) {
     return <Navigate to="/" />;
@@ -228,7 +268,7 @@ export const AddQuiz = () => {
       <TextField
         classes={{ root: styles.title }}
         variant="standard"
-        placeholder="Название квиза..."
+        placeholder={t('quizName')}
         value={title} 
         onChange={(e) => setTitle(e.target.value)}
         fullWidth
@@ -236,7 +276,7 @@ export const AddQuiz = () => {
       <TextField
         style={{marginTop: "20px", marginBottom: "20px"}}
         variant="outlined"
-        placeholder="Ссылка на видео"
+        placeholder={t('videoLink')}
         value={video} 
         onChange={(e) => setVideo(e.target.value)}
         fullWidth
@@ -245,7 +285,7 @@ export const AddQuiz = () => {
         variant="contained"
         component="label"
       >
-        Загрузить PDF файл
+        {t('uploadPDF')}
         <input
           ref={inputFileRef}
           type="file"
@@ -258,7 +298,7 @@ export const AddQuiz = () => {
       {file && (
         <>
           <Button variant="contained" color="error" onClick={onClickRemoveFile} style={{marginLeft: "20px"}}>
-            Удалить
+          {t('deletePDF')}
           </Button>
           <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.1.81/build/pdf.worker.min.js">
           <div style={{ height: "820px", marginTop: "20px", marginBottom: "20px" }}>
@@ -274,7 +314,7 @@ export const AddQuiz = () => {
         component="label"
         style={{marginLeft: "20px"}}
       >
-          Загрузить Аудио файл
+          {t('uploadAudio')}
         <input
             ref={audioFileRef}
             type="file"
@@ -286,7 +326,7 @@ export const AddQuiz = () => {
       {audio && (
         <>
           <Button variant="contained" color="error" onClick={onClickRemoveAudio} style={{marginLeft: "20px"}}>
-            Удалить
+          {t('deleteAudio')}
           </Button>
           <p>
           <ReactAudioPlayer src={`http://localhost:8000${audio}`} controls style={{marginTop: "10px", width: "100%"}}/>
@@ -294,61 +334,78 @@ export const AddQuiz = () => {
         </>
       )}
 
-      {/* <LocalizationProvider dateAdapter={AdapterDayjs} >
-      <Stack spacing={3} style={{marginTop: "20px"}}>
-        <DesktopDatePicker
-          label="Выберите дату"
-          inputFormat="DD/MM/YYYY"
-          value={date}
-          // minDate={new Date()}
-          onChange={DateHandleChange}
-          renderInput={(params) => <TextField {...params} />}
-        />
-      </Stack>
-      </LocalizationProvider> */}
+      <Grid container spacing={2}>
+        <Grid item xs={6}>
+              <p></p>
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">{t("langType")}</InputLabel>
+              <Select
+                value={langType}
+                onChange={langTypeHandler}
+              >
+                <MenuItem value="literaryGerman">{t('literaryGerman')}</MenuItem>
+                <MenuItem value="technicalGerman">{t('technicalGerman')}</MenuItem>
+              </Select>
+            </FormControl>
+            </Grid>
+        <Grid item xs={6}>
+          <p></p>
+        <FormControl fullWidth>
+          <InputLabel id="demo-simple-select-label">{t("langLevel")}</InputLabel>
+          <Select
+            value={langLevel}
+            onChange={langLevelHandler}
+          >
+            <MenuItem value="A1">A1</MenuItem>
+            <MenuItem value="A2">A2</MenuItem>
+            <MenuItem value="B1">B1</MenuItem>
+            <MenuItem value="B2">B2</MenuItem>
+            <MenuItem value="C1">C1</MenuItem>
+            <MenuItem value="C2">C2</MenuItem>
+          </Select>
+        </FormControl>
+        </Grid>
+      </Grid>
       
       {
         questions.map((question, i) => (
-          <div key={i} style={{marginTop: "20px"}}>
-            <TextField
-              variant="outlined"
-              placeholder='Вопрос'
-              value={question.questionText} 
-              onChange={(e) => questionTextChange(i, e.target.value)}
-              fullWidth
-            />
-            {
-              question.answers.map((answer, j) => (
-                <div key={j}>
-                    <TextField
-                      variant="outlined"
-                      placeholder='Ответ'
-                      value={answer} 
-                      onChange={(e) => answerTextChange(i, j, e.target.value)}
-                      fullWidth
-            />
-                </div>
-              ))
-            }
-            <TextField
-              variant="outlined"
-              placeholder='Правильный ответ'
-              value={question.correctAnswer} 
-              onChange={(e) => correctAnswerTextChange(i, e.target.value)}
-              fullWidth
+          <div key={i}>
+            <FormControl fullWidth sx={{mt: 4}}>
+              <InputLabel id="demo-simple-select-label">Тип вопроса</InputLabel>
+              <Select
+                value={question.type}
+                onChange={e => questionTypeChange(i, e.target.value)}
+              >
+                <MenuItem value="standart">Standart</MenuItem>
+                <MenuItem value="missedWord">Пропущеное слово</MenuItem>
+                <MenuItem value="esse">Эссе</MenuItem>
+              </Select>
+            </FormControl>
+            <Questions
+              type={question.type}
+              question={question.questionText}
+              answers={question.answers}
+              rightAnswer={question.correctAnswer}
+              number={i}
+              questionHandler={questionTextChange}
+              answerHandler={answerTextChange}
+              rightAnswerHandler={correctAnswerTextChange}
+              addAnswer={addAnswer}
+              deleteAnswer={deleteAnswer}
+              missedWordQuestionHandler={missedWordQuestionTextChange}
             />
           </div>
         ))
       }
       <div className={styles.buttons}>
       <Button onClick={onAdd} size="large" variant="contained">
-          Добавить вопрос
+          {t('addQuestion')}
         </Button>
         <Button onClick={onSubmit} size="large" variant="contained">
-          Опубликовать
+          {t('publish')}
         </Button>
         <a href="/" style={{textDecoration: "none"}}>
-          <Button size="large" variant="contained" color='error'>Отмена</Button>
+          <Button size="large" variant="contained" color='error'>{t('cancel')}</Button>
         </a>
       </div>
     </Paper>

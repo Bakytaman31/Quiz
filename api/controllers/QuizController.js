@@ -39,16 +39,36 @@ export const getAll = async (req, res) => {
     }
   };
 
+  export const getQuizesByTypeAndLevel = async (req, res) => {
+    let quizes
+    try {
+      if (req.query.langType && req.query.langLevel) {
+        quizes = await QuizModel.find({"langType": req.query.langType, "langLevel": req.query.langLevel}).populate('author').exec();
+      } else if (req.query.langType) {
+        quizes = await QuizModel.find({"langType": req.query.langType}).populate('author').exec();
+      } else if(req.query.langLevel) {
+        quizes = await QuizModel.find({"langLevel": req.query.langLevel}).populate('author').exec();
+      }
+      res.json(quizes);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({
+        message: 'Не удалось получить квизы',
+      });
+    }
+  }
+
   export const create = async (req, res) => {
     try {
       const doc = new QuizModel({
         name: req.body.name,
         questions: req.body.questions,
         author: req.userId,
+        langType: req.body.langType,
+        langLevel: req.body.langLevel,
         video: req.body.video,
         file: req.body.file,
         audio: req.body.audio,
-        expDate: req.body.date
       });
   
       const quiz = await doc.save();
@@ -105,9 +125,11 @@ export const getAll = async (req, res) => {
         {
           name: req.body.name,
           questions: req.body.questions,
+          langType: req.body.langType,
+          langLevel: req.body.langLevel,
           video: req.body.video,
           file: req.body.file,
-          audio: req.body.audio
+          audio: req.body.audio,
         },
       );
   
@@ -117,7 +139,51 @@ export const getAll = async (req, res) => {
     } catch (err) {
       console.log(err);
       res.status(500).json({
-        message: 'Не удалось обновить статью',
+        message: 'Не удалось обновить квиз',
       });
     }
   };
+
+  export const lockQuiz = async (req, res) => {
+    try {
+      const quizId = req.params.id;
+      await QuizModel.updateOne(
+        {
+          _id: quizId,
+        },
+        {
+          open: false
+        },
+      );
+      res.json({
+        success: true,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({
+        message: 'Не удалось заблокировать квиз',
+      });
+    }
+  }
+
+  export const unlockQuiz = async (req, res) => {
+    try {
+      const quizId = req.params.id;
+      await QuizModel.updateOne(
+        {
+          _id: quizId,
+        },
+        {
+          open: true
+        },
+      );
+      res.json({
+        success: true,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({
+        message: 'Не удалось заблокировать квиз',
+      });
+    }
+  }
