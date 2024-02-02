@@ -2,10 +2,6 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Button from '@mui/material/Button';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
 import { useTranslation } from 'react-i18next';
 
 import styles from './Header.module.scss';
@@ -16,7 +12,7 @@ export const Header = () => {
   const dispatch = useDispatch();
   const isAuth = useSelector(selectIsAuth);
   const isTeacher = useSelector(role);
-  const {t, i18n} = useTranslation();
+  const {t} = useTranslation();
 
 
   const onClickLogout = () => {
@@ -25,11 +21,6 @@ export const Header = () => {
       window.localStorage.removeItem('token');
     }
   };
-
-  const changeLang = event => {
-    i18n.changeLanguage(event.target.value);
-    console.log(i18n.language)
-  }
   
   if(isAuth && isTeacher) {
     return (
@@ -39,20 +30,6 @@ export const Header = () => {
             <Link className={styles.logo} to="/">
               <div>QUIZ</div>
             </Link>
-            <FormControl style={{minWidth: 120}} variant="standard">
-              <InputLabel id="demo-customized-select-label">{t("language")}</InputLabel>
-              <Select
-                labelId="demo-customized-select-label"
-                id="demo-customized-select"
-                value={i18n.language}
-                onChange={changeLang}
-                defaultValue=""
-              >
-                <MenuItem value="EN">EN</MenuItem>
-                <MenuItem value="RU">RU</MenuItem>
-                <MenuItem value="DE">DE</MenuItem>
-              </Select>
-            </FormControl>
             <div className={styles.buttons}>
                   <Link to="/myQuizes">
                     <Button variant="outlined">{t("myQuizes")}</Button>
@@ -77,20 +54,6 @@ export const Header = () => {
                       <Link className={styles.logo} to="/">
                         <div>QUIZ</div>
                       </Link>
-                      <FormControl style={{minWidth: 120}} variant="standard">
-                        <InputLabel id="demo-customized-select-label">{t("language")}</InputLabel>
-                        <Select
-                          labelId="demo-customized-select-label"
-                          id="demo-customized-select"
-                          value={i18n.language}
-                          onChange={changeLang}
-                          defaultValue=""
-                        >
-                          <MenuItem value="EN">EN</MenuItem>
-                          <MenuItem value="RU">RU</MenuItem>
-                          <MenuItem value="DE">DE</MenuItem>
-                        </Select>
-                      </FormControl>
                       <div className={styles.buttons}>
                             <Button onClick={onClickLogout} variant="contained" color="error">
                               Выйти
@@ -109,26 +72,12 @@ export const Header = () => {
           <Link className={styles.logo} to="/">
             <div>QUIZ</div>
           </Link>
-          <FormControl style={{minWidth: 120}} variant="standard">
-              <InputLabel id="demo-customized-select-label">{t("language")}</InputLabel>
-              <Select
-                labelId="demo-customized-select-label"
-                id="demo-customized-select"
-                value={i18n.language}
-                onChange={changeLang}
-                defaultValue=""
-              >
-                <MenuItem value="EN">EN</MenuItem>
-                <MenuItem value="RU">RU</MenuItem>
-                <MenuItem value="DE">DE</MenuItem>
-              </Select>
-            </FormControl>
           <div className={styles.buttons}>
                  <Link to="/login">
-                   <Button variant="outlined">Войти</Button>
+                   <Button variant="outlined">{t('signInButton')}</Button>
                  </Link>
                  <Link to="/register">
-                   <Button variant="contained">Создать аккаунт</Button>
+                   <Button variant="contained">{t('signUpButton')}</Button>
                  </Link>
           </div>
         </div>

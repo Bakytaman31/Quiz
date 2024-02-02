@@ -9,6 +9,7 @@ import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import { toast } from 'react-toastify';
 import 'easymde/dist/easymde.min.css';
+import { useTranslation } from 'react-i18next';
 
 import styles from './Login.module.scss';
 import {fetchRegister, selectIsAuth } from '../../redux/slices/auth';
@@ -28,6 +29,7 @@ export const Registration = () => {
     },
     mode: 'onChange',
   });
+  const {t, i18n} = useTranslation();
 
   const onSubmit = async (values) => {
     const data = await dispatch(fetchRegister(values));
@@ -54,7 +56,7 @@ export const Registration = () => {
   return (
     <Paper classes={{ root: styles.root }}>
       <Typography classes={{ root: styles.title }} variant="h5">
-        Создание аккаунта
+        {t('signUpHeader')}
       </Typography>
       <div className={styles.avatar}>
         <Avatar sx={{ width: 100, height: 100 }} />
@@ -65,7 +67,7 @@ export const Registration = () => {
           helperText={errors.fullName?.message}
           {...register('fullName', { required: 'Укажите полное имя' })}
           className={styles.field}
-          label="Полное имя"
+          label={t('fullName')}
           fullWidth
         />
         <TextField
@@ -83,11 +85,11 @@ export const Registration = () => {
           type="password"
           {...register('password', { required: 'Укажите пароль' })}
           className={styles.field}
-          label="Пароль"
+          label={t('password')}
           fullWidth
         />
         <Button disabled={!isValid} type="submit" size="large" variant="contained" fullWidth>
-          Зарегистрироваться
+          {t('signUpButton')}
         </Button>
       </form>
     </Paper>

@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 export const Login = () => {
   const isAuth = useSelector(selectIsAuth);
   const dispatch = useDispatch();
-  const {t, i18n} = useTranslation();
+  const {t} = useTranslation();
   const {
     register,
     handleSubmit,

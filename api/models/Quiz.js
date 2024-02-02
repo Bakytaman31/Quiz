@@ -16,10 +16,6 @@ const QuizSchema = new mongoose.Schema(
       ref: 'User',
       required: true
     },
-    langType: {
-      type: String,
-      required: true
-    },
     langLevel: {
       type: String,
       required: true
@@ -31,7 +27,7 @@ const QuizSchema = new mongoose.Schema(
       type: String
     },
     audio: {
-      type: String
+      type: Array
     },
     open: {
       type: Boolean,

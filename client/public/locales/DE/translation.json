@@ -5,7 +5,8 @@
     "logOut": "Abmelden",
     "signIn": "Melden Sie sich bei Ihrem Konto an",
     "password": "Passwort",
-    "signInButton": "Geben",
+    "signInButton": "Anmelden",
+    "signUpButton": "Einschreiben",
     "langType": "Sprachtyp",
     "langLevel": "Sprachniveau",
     "literaryGerman": " Fach Deutsch",
@@ -37,5 +38,15 @@
     "quizOpen": "Das Quiz ist offen",
     "quizOpenError": "Fehler beim Öffnen des Quiz",
     "pageNotFound": "Seite nicht gefunden",
-    "goBack": "Zurückgehen"
+    "goBack": "Zurückgehen",
+    "signUpHeader": "Neues Konto erstellen",
+    "fullName": "Name und Vorname",
+    "video": "Video",
+    "audio": "Audio",
+    "materials": "Materialen",
+    "noResults": "Kein Ergebnisse jetzt",
+    "questionType": "Question type",
+    "standartQuestion": "Multiple choise questions",
+    "missedWord": "Missed word question",
+    "esse": "Esse"
 }

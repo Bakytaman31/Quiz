@@ -16,6 +16,9 @@ import { PostSkeleton } from './Skeleton';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import ReactAudioPlayer from 'react-audio-player';
+import { useTranslation } from 'react-i18next';
+
+
 
 export const Quiz = ({
   id,
@@ -32,12 +35,14 @@ export const Quiz = ({
   isLoading,
   isEditable,
 }) => {
+  const {t} = useTranslation();
   if (isLoading) {
     return <PostSkeleton />;
   }
 
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
-
+  
+  
   return (
     <div className={clsx(styles.root, { [styles.rootFull]: isFullPost })}>
       {isEditable && (
@@ -74,18 +79,23 @@ export const Quiz = ({
           </h2>
           {video ? 
             <div style={{margin: "20px auto", height: "500px"}}>
-              <h2>Видео</h2>
+              <h2>{t('video')}</h2>
               <ReactPlayer url={video} controls={true} style={{margin: "0 auto"}} width="100%" height="100%"/> 
             </div>
             : ''}
           {audio ? 
-            <div style={{marginTop: "60px"}}>
-              <h2>Аудио</h2>
-              <ReactAudioPlayer src={`http://localhost:8000${audio}`} controls style={{width: "100%"}}/> 
-            </div>
+          (<>
+          <h2>{t('audio')}</h2>
+            {audio.map((track, i) =>(
+            <div style={{marginTop: "60px"}} key={i}>
+            <ReactAudioPlayer src={`http://localhost:8000${track}`} controls style={{width: "100%"}}/> 
+          </div>
+          ))}
+          </>)
+            
             : ''}
           {file ? <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.1.81/build/pdf.worker.min.js">
-            <h2>Материалы</h2>
+            <h2>{t('materials')}</h2>
             <div style={{ height: "820px" }}>
               <Viewer fileUrl={`http://localhost:8000${file}`}  plugins={[defaultLayoutPluginInstance]}/>
             </div>

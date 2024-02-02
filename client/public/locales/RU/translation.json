@@ -6,6 +6,7 @@
     "signIn": "Вход в аккаунт",
     "password": "Пароль",
     "signInButton": "Войти",
+    "signUpButton": "Зарегестрироваться",
     "langType": "Тип языка",
     "langLevel": "Уровень языка",
     "literaryGerman": "Литературный немецкий",
@@ -37,5 +38,15 @@
     "quizOpen": "Квиз открыт",
     "quizOpenError": "Ошибка при открытии квиза",
     "pageNotFound": "Страница не найдена",
-    "goBack": "Вернуться"
+    "goBack": "Вернуться",
+    "signUpHeader": "Создание аккаунта",
+    "fullName": "Полное имя",
+    "video": "Видео",
+    "audio": "Аудио",
+    "materials": "Материалы",
+    "noResults": "Сейчас нет результатов",
+    "questionType": "Тип вопроса",
+    "standartQuestion": "Стандартный вопрос",
+    "missedWord": "Пропущенное слово",
+    "esse": "Эссе"
 }

@@ -15,6 +15,9 @@ const ResultsSchema = new mongoose.Schema(
     result: {
       type: Number,
       required: true,
+    },
+    esse: {
+      type: String,
     }
   },
   {

@@ -40,8 +40,7 @@ export const AddQuiz = () => {
   const [file, setFile] = React.useState('');
   const inputFileRef = React.useRef(null);
   const audioFileRef = React.useRef(null);
-  const [audio, setAudio] = React.useState('');
-  const [langType, setLangType] = React.useState('');
+  const [audio, setAudio] = React.useState([]);
   const [langLevel, setLangLevel] = React.useState('');
   const {t} = useTranslation();
 
@@ -57,7 +56,6 @@ export const AddQuiz = () => {
         video,
         file,
         audio,
-        langType,
         langLevel
       };
 
@@ -66,13 +64,13 @@ export const AddQuiz = () => {
         : await axios.post('/quizes', fields);
 
       const _id = isEditing ? id : data._id;
-      isEditing ? toast.success('Квиз обновлен', {
+      isEditing ? toast.success('Quiz updated', {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
         pauseOnHover: true,
         theme: "colored",
-        }) : toast.success('Новый квиз добавлен', {
+        }) : toast.success('New quiz added', {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -84,7 +82,7 @@ export const AddQuiz = () => {
     } catch (err) {
       setLoading(false);
       console.warn(err);
-      toast.error('Ошибка при создани квиза', {
+      toast.error('Error', {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -107,7 +105,7 @@ export const AddQuiz = () => {
     } catch (err) {
       console.warn(err);
       setLoading(false);
-      toast.error('Ошибка при загрузке файла', {
+      toast.error('Error while uploading file', {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -124,12 +122,12 @@ export const AddQuiz = () => {
       const file = event.target.files[0];
       formData.append('file', file);
       const { data } = await axios.post('/upload', formData);
-      setAudio(data.url);
+      setAudio([...audio, data.url]);
       setLoading(false);
     } catch (err) {
       console.warn(err);
       setLoading(false);
-      toast.error('Ошибка при загрузке файла', {
+      toast.error('Error while uploading file', {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -139,18 +137,16 @@ export const AddQuiz = () => {
     }
   };
 
-  const onClickRemoveAudio = () => {
-    setAudio('');
+  const onClickRemoveAudio = i => {
+    const files = [...audio];
+    files.splice(i,1);
+    setAudio(files);
   };
   
 
   const onClickRemoveFile = () => {
     setFile('');
   };
-
-  const langTypeHandler = e => {
-    setLangType(e.target.value);
-  }
 
   const langLevelHandler = e => {
     setLangLevel(e.target.value);
@@ -160,7 +156,7 @@ export const AddQuiz = () => {
     let newQuestions = [...questions];
     let item = {...newQuestions[i]};
     item.type = value;
-    item.questionText = ["", ""]
+    item.questionText = "";
     newQuestions[i] = item;
     setQuestions(newQuestions);
   }
@@ -240,7 +236,7 @@ export const AddQuiz = () => {
         .catch((err) => {
           console.warn(err);
           setLoading(false);
-          toast.error('Ошибка при получении статьи', {
+          toast.error('Error while getting quiz', {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -280,6 +276,9 @@ export const AddQuiz = () => {
         value={video} 
         onChange={(e) => setVideo(e.target.value)}
         fullWidth
+        autoComplete='off'
+        autoCorrect='off'
+        autoCapitalize='none'
       />
       <Button
         variant="contained"
@@ -323,32 +322,24 @@ export const AddQuiz = () => {
             hidden
         />
       </Button>
-      {audio && (
+      {audio.length > 0 && (
         <>
-          <Button variant="contained" color="error" onClick={onClickRemoveAudio} style={{marginLeft: "20px"}}>
-          {t('deleteAudio')}
-          </Button>
-          <p>
-          <ReactAudioPlayer src={`http://localhost:8000${audio}`} controls style={{marginTop: "10px", width: "100%"}}/>
-          </p>
+          
+          
+          {audio.map((track, i) => (
+            <div key={i}>
+              <ReactAudioPlayer src={`http://localhost:8000${track}`} controls style={{marginTop: "10px", width: "100%"}}/>
+              <Button variant="contained" color="error" onClick={e => onClickRemoveAudio(i)} style={{marginLeft: "20px"}}>
+                {t('deleteAudio')}
+              </Button>
+          </div>
+          ))}
+          
         </>
       )}
 
       <Grid container spacing={2}>
-        <Grid item xs={6}>
-              <p></p>
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">{t("langType")}</InputLabel>
-              <Select
-                value={langType}
-                onChange={langTypeHandler}
-              >
-                <MenuItem value="literaryGerman">{t('literaryGerman')}</MenuItem>
-                <MenuItem value="technicalGerman">{t('technicalGerman')}</MenuItem>
-              </Select>
-            </FormControl>
-            </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12}>
           <p></p>
         <FormControl fullWidth>
           <InputLabel id="demo-simple-select-label">{t("langLevel")}</InputLabel>
@@ -356,12 +347,12 @@ export const AddQuiz = () => {
             value={langLevel}
             onChange={langLevelHandler}
           >
-            <MenuItem value="A1">A1</MenuItem>
-            <MenuItem value="A2">A2</MenuItem>
-            <MenuItem value="B1">B1</MenuItem>
-            <MenuItem value="B2">B2</MenuItem>
-            <MenuItem value="C1">C1</MenuItem>
-            <MenuItem value="C2">C2</MenuItem>
+            <MenuItem value="Beginner">Beginner</MenuItem>
+            <MenuItem value="Elementary">Elementary</MenuItem>
+            <MenuItem value="Pre-Intermediate">Pre-Intermediate</MenuItem>
+            <MenuItem value="Intermediate">Intermediate</MenuItem>
+            <MenuItem value="Upper-Intermediate">Upper-Intermediate</MenuItem>
+            <MenuItem value="Advanced">Advanced</MenuItem>
           </Select>
         </FormControl>
         </Grid>
@@ -371,14 +362,15 @@ export const AddQuiz = () => {
         questions.map((question, i) => (
           <div key={i}>
             <FormControl fullWidth sx={{mt: 4}}>
-              <InputLabel id="demo-simple-select-label">Тип вопроса</InputLabel>
+              <InputLabel id="demo-simple-select-label">{t('questionType')}</InputLabel>
               <Select
                 value={question.type}
                 onChange={e => questionTypeChange(i, e.target.value)}
               >
-                <MenuItem value="standart">Standart</MenuItem>
-                <MenuItem value="missedWord">Пропущеное слово</MenuItem>
-                <MenuItem value="esse">Эссе</MenuItem>
+                <MenuItem value="standart">{t('standartQuestion')}</MenuItem>
+                <MenuItem value="missedWord">{t('missedWord')}</MenuItem>
+                <MenuItem value="highlightWord">Highlight word</MenuItem>
+                <MenuItem value="esse">{t('esse')}</MenuItem>
               </Select>
             </FormControl>
             <Questions

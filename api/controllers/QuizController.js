@@ -64,7 +64,6 @@ export const getAll = async (req, res) => {
         name: req.body.name,
         questions: req.body.questions,
         author: req.userId,
-        langType: req.body.langType,
         langLevel: req.body.langLevel,
         video: req.body.video,
         file: req.body.file,

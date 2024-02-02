@@ -29,11 +29,12 @@ import ResultsModel from "../models/Results.js";
   export const create = async (req, res) => {
     try {
         const quizId = req.params.id;
-
+        console.log(req.body.esse)
         const doc = new ResultsModel({
         quiz: quizId,
         user: req.userId,
-        result: req.body.result
+        result: req.body.result,
+        esse: req.body.esse,
       });
   
       const result = await doc.save();

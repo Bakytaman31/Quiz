@@ -11,6 +11,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import { toast } from 'react-toastify';
 import 'easymde/dist/easymde.min.css';
 import { useTranslation } from 'react-i18next';
+import { TextField, TextareaAutosize } from '@mui/material';
 
 export const Home = () => {
   const userData = useSelector((state) => state.auth.data);
@@ -18,7 +19,7 @@ export const Home = () => {
   const [loading, setLoading] = React.useState(false);
   const [langType, setLangType] = React.useState('');
   const [langLevel, setLangLevel] = React.useState('');
-  const {t, i18n} = useTranslation();
+  const {t} = useTranslation();
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -49,6 +50,7 @@ export const Home = () => {
   const langLevelHandler = e => {
     setLangLevel(e.target.value);
   }
+
 
   const deleteQuiz = async id => {
     if (window.confirm(t("deleteQuizConfirmation"))) {
@@ -181,22 +183,9 @@ export const Home = () => {
       <Grid container spacing={2}>
         <Grid xs={12} item>
           <Grid container spacing={2}>
-            <Grid item xs={6}>
+            <Grid item xs={12}>
               <p></p>
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">{t("langType")}</InputLabel>
-              <Select
-                name="type"
-                value={langType}
-                onChange={typeAndLevelHandler}
-              >
-                <MenuItem value="literaryGerman">{t('literaryGerman')}</MenuItem>
-                <MenuItem value="technicalGerman">{t('technicalGerman')}</MenuItem>
-              </Select>
-            </FormControl>
-            </Grid>
-            <Grid item xs={6}>
-              <p></p>
+              
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">{t("langLevel")}</InputLabel>
               <Select
@@ -204,12 +193,12 @@ export const Home = () => {
                 value={langLevel}
                 onChange={typeAndLevelHandler}
               >
-                <MenuItem value="A1">A1</MenuItem>
-                <MenuItem value="A2">A2</MenuItem>
-                <MenuItem value="B1">B1</MenuItem>
-                <MenuItem value="B2">B2</MenuItem>
-                <MenuItem value="C1">C1</MenuItem>
-                <MenuItem value="C2">C2</MenuItem>
+                <MenuItem value="Beginner">Beginner</MenuItem>
+                <MenuItem value="Elementary">Elementary</MenuItem>
+                <MenuItem value="Pre-Intermediate">Pre-Intermediate</MenuItem>
+                <MenuItem value="Intermediate">Intermediate</MenuItem>
+                <MenuItem value="Upper-Intermediate">Upper-Intermediate</MenuItem>
+                <MenuItem value="Advanced">Advanced</MenuItem>
               </Select>
             </FormControl>
             </Grid>

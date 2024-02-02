@@ -13,8 +13,7 @@ export const Questions = ({
     answerHandler,
     rightAnswerHandler,
     addAnswer,
-    deleteAnswer,
-    missedWordQuestionHandler
+    deleteAnswer
 }) => {
     const {t} = useTranslation();
 
@@ -55,15 +54,8 @@ export const Questions = ({
         <TextField
         variant="outlined"
         placeholder={t('question')}
-        value={question[0]} 
-        onChange={(e) => missedWordQuestionHandler(number, 0,e.target.value)}
-        fullWidth
-      />
-      <TextField
-        variant="outlined"
-        placeholder={t('question')}
-        value={question[1]} 
-        onChange={(e) => missedWordQuestionHandler(number, 1,e.target.value)}
+        value={question} 
+        onChange={(e) => questionHandler(number,e.target.value)}
         fullWidth
       />
       {
@@ -84,7 +76,7 @@ export const Questions = ({
         component="label"
         style={{marginTop: "20px", marginBottom: "20px"}}
         onClick={() => addAnswer(number)}>
-          Добавить ответ
+          Add answer
         </Button>
         <Button
         variant="contained"
@@ -92,7 +84,7 @@ export const Questions = ({
         color="error"
         style={{marginTop: "20px", marginBottom: "20px", marginLeft: "10px"}}
         onClick={() => deleteAnswer(number)}>
-          Убрать ответ
+          Remove answer
         </Button>
       <TextField
         variant="outlined"
@@ -116,13 +108,39 @@ export const Questions = ({
       </div>
     );
 
+    const highlightWord = (
+      <div key={number} style={{marginTop: "20px"}}>
+        <TextField
+          variant="outlined"
+          placeholder={t('question')}
+          value={question}
+          onChange={(e) => questionHandler(number, e.target.value)}
+          fullWidth
+        />
+        <TextField
+        variant="outlined"
+        placeholder="Text"
+        fullWidth
+      />
+        <TextField
+        variant="outlined"
+        placeholder={t('rightAnswer')}
+        value={rightAnswer} 
+        onChange={(e) => rightAnswerHandler(number, e.target.value)}
+        fullWidth
+      />
+      </div>
+    );
+
     switch(type) {
         case "standart":
             return standardQuestion;
         case "missedWord":
             return missedWordQuestion;
-            case "esse":
-              return esse;
+        case "esse":
+            return esse;
+        case "highlightWord":
+            return highlightWord;
         default:
             return ""
             

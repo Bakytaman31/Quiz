@@ -11,12 +11,14 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import { useTranslation } from 'react-i18next';
 
 export const Results = () => {
   const { id } = useParams();
   const userData = useSelector((state) => state.auth.data);
   const [QuizResutls, setResults] = React.useState([]);
   const [isLoading, setLoading] = React.useState(false);
+  const {t, i18n} = useTranslation();
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -86,7 +88,7 @@ export const Results = () => {
               </CardActions>
             </Card>
             ),
-          ) : <h1 style={{textAlign: "center"}}>Сейчас нет результатов</h1>} 
+          ) : <h1 style={{textAlign: "center"}}>{t('noResults')}</h1>} 
         </Grid>
       </Grid>
     </>

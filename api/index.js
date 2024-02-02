@@ -12,7 +12,7 @@ import { handleValidationErrors, checkAuth } from './utils/index.js';
 import { QuizControler, ResultsController, UserController } from './controllers/index.js';
 
 mongoose
-  .connect("mongodb+srv://Aman:Bakytaman1@quiz.tmdgdb7.mongodb.net/test?authMechanism=DEFAULT")
+  .connect("mongodb://localhost:27017/")
   .then(() => console.log('DB ok'))
   .catch((err) => console.log('DB error', err));
 
@@ -26,6 +26,7 @@ const storage = multer.diskStorage({
     cb(null, 'uploads');
   },
   filename: (_, file, cb) => {
+    console.log(file, cb);
     cb(null, file.originalname);
   },
 });

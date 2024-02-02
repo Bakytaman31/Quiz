@@ -5,7 +5,8 @@
     "logOut": "Log Out",
     "signIn": "Log in to your account",
     "password": "Password",
-    "signInButton": "Enter",
+    "signInButton": "Sign in",
+    "signUpButton": "Sign up",
     "langType": "Language type",
     "langLevel": "Language level",
     "literaryGerman": "Literary German",
@@ -37,5 +38,16 @@
     "quizOpen": "The quiz is open",
     "quizOpenError": "Error on opening the quiz",
     "pageNotFound": "Page not found",
-    "goBack": "Go back"
+    "goBack": "Go back",
+    "signUpHeader": "Sign up",
+    "fullName": "Full name",
+    "video": "Video",
+    "audio": "Audio",
+    "materials": "Materials",
+    "noResults": "No results now",
+    "questionType": "Question type",
+    "standartQuestion": "Multiple choise questions",
+    "missedWord": "Missed word question",
+    "esse": "Esse",
+    "quizUnavalable": "Quiz is unavailable"
 }
