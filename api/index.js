@@ -12,7 +12,7 @@ import { handleValidationErrors, checkAuth } from './utils/index.js';
 import { QuizControler, ResultsController, UserController } from './controllers/index.js';
 
 mongoose
-  .connect("mongodb://localhost:27017/")
+  .connect("mongodb+srv://Aman:Bakytaman1@quiz.tmdgdb7.mongodb.net/test?authMechanism=DEFAULT")
   .then(() => console.log('DB ok'))
   .catch((err) => console.log('DB error', err));
 
